@@ -89,8 +89,8 @@ class FormBuilderFieldState<F extends FormBuilderField<T>, T>
   /// initialValue prevails.
   T? get initialValue =>
       widget.initialValue ??
-      (_formBuilderState?.initialValue ?? const <String, dynamic>{})[widget
-              .name]
+      (_formBuilderState?.initialValue ??
+              const <String, dynamic>{})[widget.name]
           as T?;
 
   dynamic get transformedValue =>
@@ -224,10 +224,15 @@ class FormBuilderFieldState<F extends FormBuilderField<T>, T>
     super.reset();
     didChange(initialValue);
     _dirty = false;
+    clearError();
+    widget.onReset?.call();
+  }
+
+  /// Clear custom error text
+  void clearError() {
     if (_customErrorText != null) {
       setState(() => _customErrorText = null);
     }
-    widget.onReset?.call();
   }
 
   /// Validate field
@@ -252,7 +257,7 @@ class FormBuilderFieldState<F extends FormBuilderField<T>, T>
     bool autoScrollWhenFocusOnInvalid = false,
   }) {
     if (clearCustomError) {
-      setState(() => _customErrorText = null);
+      clearError();
     }
     final isValid = super.validate() && !hasError;
 
